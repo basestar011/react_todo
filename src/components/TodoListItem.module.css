@@ -12,7 +12,6 @@
   align-items: center;
 }
 .item div input[type='checkbox'] {
-  align-self: center;
   margin: 0;
   width: 1rem;
   height: 1rem;

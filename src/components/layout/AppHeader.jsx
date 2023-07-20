@@ -15,7 +15,7 @@ export default function AppHeader() {
       {/* 클릭 시 li에 .active 추가 */}
       <ul className={`tab-list ${styles.list}`}>
         <li>전체</li>
-        <li>계획중</li>
+        <li>해야할 일</li>
         <li>완료!</li>
       </ul>
     </header>
