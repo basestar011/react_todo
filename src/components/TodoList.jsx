@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import styles from './TodoList.module.css';
 import TodoListItem from './TodoListItem';
+import { useImmer } from 'use-immer';
 
 export default function TodoList() {
-  const [todoList, setTodoList] = useState([]);
+  const [todoList, updateTodoList] = useImmer([]);
   useEffect(() => {
     fetch('data/todo.json')
       .then((res) => res.json())
-      .then((todoList) => setTodoList(todoList));
+      .then((initial) =>
+        updateTodoList((todoList) => {
+          todoList.push(...initial);
+        }),
+      );
   }, []);
 
   const handleChange = (index) => {
-    setTodoList((prev) => {
-      const next = [...prev];
-      next.splice(index, 1, {
-        ...prev[index],
-        completed: !prev[index].completed,
-      });
-      return next;
+    updateTodoList((todoList) => {
+      todoList[index].completed = !todoList[index].completed;
     });
   };
   return (
