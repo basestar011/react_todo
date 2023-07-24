@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styles from './TodoListItem.module.css';
 import IconButton from './common/IconButton';
-import { BsFillTrashFill } from 'react-icons/bs';
+import { BsFillTrashFill, BsFillPencilFill } from 'react-icons/bs';
+import { TodoListContext } from '../context/TodoListContext';
 
-export default function TodoListItem({ index, title, completed, onChange }) {
+export default function TodoListItem({ index, todo }) {
+  const { updateTodo, deleteTodo } = useContext(TodoListContext);
   return (
     <li className={styles.item}>
       <div>
@@ -11,19 +13,25 @@ export default function TodoListItem({ index, title, completed, onChange }) {
           type="checkbox"
           id={`checkbox${index}`}
           className="todo-checkbox"
-          checked={completed}
-          onChange={() => onChange(index)}
+          checked={todo.completed}
+          onChange={() => updateTodo({ ...todo, completed: !todo.completed })}
         />
         {/* 체크박스 체크 시 label에 styles.completed 클래스 추가 */}
         <label
           htmlFor={`checkbox${index}`}
-          title={title}
+          title={todo.title}
           className="todo-title"
         >
-          {title}
+          {todo.title}
         </label>
       </div>
-      <IconButton className={`icon-trash ${styles.button}`}>
+      <IconButton className={`icon-btn ${styles.button}`} onClick={() => {}}>
+        <BsFillPencilFill />
+      </IconButton>
+      <IconButton
+        className={`icon-btn ${styles.delete}`}
+        onClick={() => deleteTodo(todo.uid)}
+      >
         <BsFillTrashFill />
       </IconButton>
     </li>

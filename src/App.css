@@ -34,7 +34,7 @@
   text-decoration: line-through;
   color: darkgray;
 }
-.container .icon-trash {
+.container .icon-btn {
   background-color: lightgray;
   color: rgba(0, 0, 0, 0.644);
 }
@@ -66,7 +66,7 @@
   background-color: #1f2a4d;
   color: white;
 }
-.container.dark .icon-trash {
+.container.dark .icon-btn {
   background-color: gray;
   color: white;
 }

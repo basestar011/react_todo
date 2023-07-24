@@ -1,23 +1,18 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styles from './AppHeader.module.css';
 import IconButton from '../common/IconButton';
 import { BsFillSunFill, BsFillMoonFill } from 'react-icons/bs';
+import { DarkModeContext } from '../../context/DarkModeContext';
+import TodoTabs from '../TodoTabs';
 
 export default function AppHeader() {
+  const { darkMode, toggleMode } = useContext(DarkModeContext);
   return (
     <header className={`${styles.header}`}>
-      <IconButton className={`mode ${styles.mode}`}>
-        {/* 다크모드 시 */}
-        <BsFillSunFill />
-        {/* 라이트모드 시 */}
-        {/* <BsFillMoonFill /> */}
+      <IconButton className={`mode ${styles.mode}`} onClick={toggleMode}>
+        {darkMode ? <BsFillSunFill /> : <BsFillMoonFill />}
       </IconButton>
-      {/* 클릭 시 li에 .active 추가 */}
-      <ul className={`tab-list ${styles.list}`}>
-        <li>전체</li>
-        <li>해야할 일</li>
-        <li>완료!</li>
-      </ul>
+      <TodoTabs />
     </header>
   );
 }
