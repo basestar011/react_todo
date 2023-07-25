@@ -1,49 +1,32 @@
 import { createContext, useCallback, useMemo, useState } from 'react';
-import { useImmer } from 'use-immer';
+import { useImmerReducer } from 'use-immer';
+import todoListReducer from '../reducer/todoList-reducer.js';
 
 export const TodoListContext = createContext();
 
 export function TodoListProvider({ children }) {
-  const [todoList, updateTodoList] = useImmer(
+  const [todoList, dispatch] = useImmerReducer(
+    todoListReducer,
+    [],
     () => getFromLocalStorage() ?? [],
   );
   const [condition, setCondition] = useState(null);
 
   // add single todo
   const addTodo = useCallback(
-    (todo) => {
-      updateTodoList((todoList) => {
-        todoList.push(todo);
-        saveToLocalStorage(todoList);
-      });
-    },
-    [updateTodoList],
+    (todo) => dispatch({ type: 'add', todo }),
+    [dispatch],
   );
   // update single todo
   const updateTodo = useCallback(
-    ({ uid, title, completed }) => {
-      updateTodoList((todoList) => {
-        const index = todoList.findIndex((todo) => todo.uid === uid);
-        if (index > -1) {
-          todoList.splice(index, 1, { uid, title, completed });
-          saveToLocalStorage(todoList);
-        }
-      });
-    },
-    [updateTodoList],
+    ({ uid, title, completed }) =>
+      dispatch({ type: 'update', uid, title, completed }),
+    [dispatch],
   );
   // delete single todo
   const deleteTodo = useCallback(
-    (uid) => {
-      updateTodoList((todoList) => {
-        const index = todoList.findIndex((todo) => todo.uid === uid);
-        if (index > -1) {
-          todoList.splice(index, 1);
-          saveToLocalStorage(todoList);
-        }
-      });
-    },
-    [updateTodoList],
+    (uid) => dispatch({ type: 'delete', uid }),
+    [dispatch],
   );
 
   const setFilterCondition = useCallback(
@@ -51,11 +34,7 @@ export function TodoListProvider({ children }) {
     [],
   );
   const filteredTodoList = useMemo(() => {
-    if (!condition) {
-      return todoList;
-    } else {
-      return todoList.filter(condition);
-    }
+    return condition ? todoList.filter(condition) : todoList;
   }, [todoList, condition]);
   return (
     <TodoListContext.Provider
@@ -71,10 +50,6 @@ export function TodoListProvider({ children }) {
       {children}
     </TodoListContext.Provider>
   );
-}
-
-function saveToLocalStorage(todoList) {
-  localStorage.setItem('todo', JSON.stringify(todoList));
 }
 
 function getFromLocalStorage() {
