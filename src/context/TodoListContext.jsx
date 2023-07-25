@@ -5,36 +5,51 @@ export const TodoListContext = createContext();
 
 export function TodoListProvider({ children }) {
   const [todoList, updateTodoList] = useImmer(
-    () => getTodoListFromLocalStorage() ?? [],
+    () => getFromLocalStorage() ?? [],
   );
   const [condition, setCondition] = useState(null);
 
   // add single todo
-  const addTodo = useCallback((todo) => {
-    updateTodoList((todoList) => {
-      todoList = todoList.concat(todo);
-      setTodoListToLocalStorage(todoList);
-      return todoList;
-    });
-  }, []);
+  const addTodo = useCallback(
+    (todo) => {
+      updateTodoList((todoList) => {
+        todoList.push(todo);
+        saveToLocalStorage(todoList);
+      });
+    },
+    [updateTodoList],
+  );
   // update single todo
-  const updateTodo = ({ uid, title, completed }) => {
-    updateTodoList((todoList) => {
-      const index = todoList.findIndex((todo) => todo.uid === uid);
-      if (index > -1) todoList.splice(index, 1, { uid, title, completed });
-      setTodoListToLocalStorage(todoList);
-    });
-  };
+  const updateTodo = useCallback(
+    ({ uid, title, completed }) => {
+      updateTodoList((todoList) => {
+        const index = todoList.findIndex((todo) => todo.uid === uid);
+        if (index > -1) {
+          todoList.splice(index, 1, { uid, title, completed });
+          saveToLocalStorage(todoList);
+        }
+      });
+    },
+    [updateTodoList],
+  );
   // delete single todo
-  const deleteTodo = (uid) => {
-    updateTodoList((todoList) => {
-      const index = todoList.findIndex((todo) => todo.uid === uid);
-      if (index > -1) todoList.splice(index, 1);
-      setTodoListToLocalStorage(todoList);
-    });
-  };
+  const deleteTodo = useCallback(
+    (uid) => {
+      updateTodoList((todoList) => {
+        const index = todoList.findIndex((todo) => todo.uid === uid);
+        if (index > -1) {
+          todoList.splice(index, 1);
+          saveToLocalStorage(todoList);
+        }
+      });
+    },
+    [updateTodoList],
+  );
 
-  const setFilterCondition = (condition) => setCondition(condition);
+  const setFilterCondition = useCallback(
+    (condition) => setCondition(condition),
+    [],
+  );
   const filteredTodoList = useMemo(() => {
     if (!condition) {
       return todoList;
@@ -45,12 +60,12 @@ export function TodoListProvider({ children }) {
   return (
     <TodoListContext.Provider
       value={{
-        todoList, // 모든 todoList
-        filteredTodoList, // 특정 조건으로 필터링된 todoList
-        addTodo, // todoList 추가
-        updateTodo, // todoList 변경
-        deleteTodo, // todoList 삭제
-        setFilterCondition, // 특정 조건 세팅
+        todoList, // - 모든 todoList
+        filteredTodoList, // - 특정 조건으로 필터링된 todoList
+        addTodo, // - todoList 추가
+        updateTodo, // - todoList 변경
+        deleteTodo, // - todoList 삭제
+        setFilterCondition, // - 필터 조건 세팅
       }}
     >
       {children}
@@ -58,10 +73,10 @@ export function TodoListProvider({ children }) {
   );
 }
 
-function setTodoListToLocalStorage(todoList) {
+function saveToLocalStorage(todoList) {
   localStorage.setItem('todo', JSON.stringify(todoList));
 }
 
-function getTodoListFromLocalStorage() {
+function getFromLocalStorage() {
   return JSON.parse(localStorage.getItem('todo'));
 }
