@@ -19,6 +19,7 @@ export default function TodoAddForm() {
     }
     addTodo({ ...todo, uid: new Date().getTime() });
     setTodo({ title: '', completed: false });
+    inputRef.current.focus();
   };
 
   return (
